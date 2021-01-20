@@ -1,0 +1,7 @@
+<h2>{{ id }}</h2>
+<div *ngIf="isLoading">Loading ...</div>
+<ul *ngFor="let item of data$ | async">
+  <li>{{ item.id }} - {{ item.name }}</li>
+</ul>
+
+<button (click)="cancelRequests()">Cancel Requests</button>

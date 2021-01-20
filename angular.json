@@ -123,6 +123,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "cancel-pending-requests"
+    }
+  },
+  "defaultProject": "cancel-pending-requests",
+  "cli": {
+    "analytics": "c2f1df58-9220-4558-b485-43c3c37dca2e"
+  }
 }
