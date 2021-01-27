@@ -1,3 +1,3 @@
 # DEMO PROJECTS
 
-- [Angular Cancel Pending Requests](https://github.com/lfreiredev/demos/ng-cancel-pending-requests)
+- [Angular Cancel Pending Requests](https://github.com/lfreiredev/demos/tree/master/ng-cancel-pending-requests)
