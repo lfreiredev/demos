@@ -1,8 +1,11 @@
 <div #containerRef class="container">
-  <div *ngIf="popupPosition" #popupRef class="popup" [class.is-constrained]="isConstrained" [style.left.px]="popupPosition.left"
-    [style.top.px]="popupPosition.top" (mousedown)="handleMousedown($event)">
-    <span>Hello World</span>
-  </div>
+  <ng-container>
+    <div *ngFor="let item of popups" [id]="item.id" #popups class="popup" [class.is-constrained]="isConstrained"
+      [style.left.px]="item.popupPosition.left" [style.top.px]="item.popupPosition.top"
+      (mousedown)="handleMousedown($event)">
+      <span [id]="item.id">Hello World</span>
+    </div>
+  </ng-container>
 </div>
 
 <button type="button" (click)="addPopup()">Add</button>

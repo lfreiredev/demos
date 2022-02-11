@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 
 interface Position {
   left: number;
@@ -10,9 +10,17 @@ interface Size {
   height: number;
 }
 
-const minDistance = 10;
+const minDistance = 0;
 const popupWidth = 1;
 const popupHeight = 1;
+
+interface Popup {
+  id?: number;
+  anchorMouseOffset: Position;
+  anchorPosition: Position;
+  isConstrained: boolean;
+  popupPosition: Position;
+}
 
 @Component({
   selector: 'app-root',
@@ -26,21 +34,31 @@ const popupHeight = 1;
 })
 export class AppComponent implements AfterViewInit {
   // offset of the mouse relative to the popup
-  public anchorMouseOffset: Position;
-  public anchorPosition: Position;
-  public isConstrained: boolean;
-  public popupPosition: Position;
-  public popupRef!: ElementRef;
   public containerRef!: ElementRef;
   public containerSize: Size;
   public popupsSize: Size;
 
+  @ViewChildren('popups') popupsRef: QueryList<ElementRef>;
+  public popups: Popup[] = [];
+
+  private currentId: string;
+
   constructor() {
-    this.anchorMouseOffset = {
-      left: 0,
-      top: 0
+    const popup: Popup = {
+      anchorMouseOffset: {
+        left: 0,
+        top: 0,
+      },
+      anchorPosition: {
+        left: 0,
+        top: 0,
+      },
+      popupPosition: {
+        left: 50,
+        top: 50,
+      },
+      isConstrained: false
     };
-    this.isConstrained = false;
   }
 
   public ngAfterViewInit(): void {
@@ -49,24 +67,33 @@ export class AppComponent implements AfterViewInit {
       width: (this.containerRef.nativeElement as HTMLElement).clientWidth,
       height: (this.containerRef.nativeElement as HTMLElement).clientHeight,
     };
-
-    setTimeout(() => {
-      // place the popup in the middle of the container
-      this.popupPosition = {
-        left: this.containerSize.width / 2 - popupWidth / 2,
-        top: this.containerSize.height / 2 - popupHeight / 2
-      };
-
-      // place the anchor in the same place as the container
-      this.anchorPosition = this.popupPosition;
-    });
   }
 
   public addPopup(): void {
-    console.log('add popup');
+    this.popups.push({
+      id: this.popups.length,
+      anchorMouseOffset: {
+        left: 0,
+        top: 0,
+      },
+      anchorPosition: {
+        left: 0,
+        top: 0,
+      },
+      popupPosition: {
+        left: 50,
+        top: 50,
+      },
+      isConstrained: false,
+    });
   }
 
   public handleMousedown(event: MouseEvent): void {
+    this.currentId = (event.srcElement as HTMLElement).id;
+    const popup: Popup = this.popups[this.currentId];
+    const element: ElementRef = this.popupsRef
+      .find((ref) => (ref.nativeElement as HTMLElement).id === this.currentId);
+
     // Canceling the mousedown event helps prevent native 'selection' and 'dragging'
     // behaviors in the browser.
     event.preventDefault();
@@ -75,9 +102,9 @@ export class AppComponent implements AfterViewInit {
     // the popup element. This will allows us to create a more natural drag-effect
     // by maintaining this local offset as we reposition the popup relative to the
     // mouse.
-    var popupRect = this.popupRef.nativeElement.getBoundingClientRect();
-    this.anchorMouseOffset.left = (event.clientX - popupRect.left);
-    this.anchorMouseOffset.top = (event.clientY - popupRect.top);
+    var popupRect = element.nativeElement.getBoundingClientRect();
+    popup.anchorMouseOffset.left = (event.clientX - popupRect.left);
+    popup.anchorMouseOffset.top = (event.clientY - popupRect.top);
 
     // PERFORMANCE NOTE: Since these events are being bound from within the NgZone,
     // it means that Angular will trigger a change-detection digest after each event.
@@ -94,13 +121,17 @@ export class AppComponent implements AfterViewInit {
     // Calculate the position of the anchor, by removing the anchor offset to the
     // x and y coordinates of the mouse. This will place the anchor in the same
     // place as the mouse.
-    this.anchorPosition.left = event.clientX - this.anchorMouseOffset.left;
-    this.anchorPosition.top = event.clientY - this.anchorMouseOffset.top;
+    const popup: Popup = this.popups[this.currentId];
+    const element: ElementRef = this.popupsRef
+      .find((ref) => (ref.nativeElement as HTMLElement).id === this.currentId);
+
+    popup.anchorPosition.left = event.clientX - popup.anchorMouseOffset.left;
+    popup.anchorPosition.top = event.clientY - popup.anchorMouseOffset.top;
 
     // In order to prevent the popup from being positioned outside of the container,
     // and knowing its dimensions, we can limit offsets as the popup 
     // approaches the edge of the ewport.
-    var popupRect = this.popupRef.nativeElement.getBoundingClientRect();
+    var popupRect = element.nativeElement.getBoundingClientRect();
     var popupWidth = popupRect.width;
     var popupHeight = popupRect.height;
 
@@ -112,20 +143,20 @@ export class AppComponent implements AfterViewInit {
     var maxTop = (this.containerSize.height - popupHeight - minDistance);
 
     // Make sure we don't go too far right or left.
-    this.popupPosition.left = Math.min(this.anchorPosition.left, maxLeft);
-    this.popupPosition.left = Math.max(minDistance, this.popupPosition.left);
+    popup.popupPosition.left = Math.min(popup.anchorPosition.left, maxLeft);
+    popup.popupPosition.left = Math.max(minDistance, popup.popupPosition.left);
 
     // Make sure we don't go too far down or up.
-    this.popupPosition.top = Math.min(this.anchorPosition.top, maxTop);
-    this.popupPosition.top = Math.max(minDistance, this.popupPosition.top);
+    popup.popupPosition.top = Math.min(popup.anchorPosition.top, maxTop);
+    popup.popupPosition.top = Math.max(minDistance, popup.popupPosition.top);
 
     // Check to see if the popup position has been constrained.
     // If it has touched any of the edges of the container.
-    this.isConstrained =
-      this.popupPosition.left === ((this.containerRef.nativeElement as HTMLElement).clientLeft + minDistance) ||
-      this.popupPosition.left === maxLeft ||
-      this.popupPosition.top === ((this.containerRef.nativeElement as HTMLElement).clientTop + minDistance) ||
-      this.popupPosition.top === maxTop;
+    popup.isConstrained =
+      popup.popupPosition.left === ((this.containerRef.nativeElement as HTMLElement).clientLeft + minDistance) ||
+      popup.popupPosition.left === maxLeft ||
+      popup.popupPosition.top === ((this.containerRef.nativeElement as HTMLElement).clientTop + minDistance) ||
+      popup.popupPosition.top === maxTop;
   }
 
   public handleMouseup = (): void => {
