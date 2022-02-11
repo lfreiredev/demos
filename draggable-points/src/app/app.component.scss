@@ -1,13 +1,23 @@
 .container {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
+  background-color: antiquewhite;
+  display: block;
+  font-size: 18px;
+  height: 500px;
+  width: 500px;
 }
 
-.box {
-  border: 3px solid #666;
-  background-color: #ddd;
-  border-radius: .5em;
-  padding: 10px;
-  cursor: move;
+.popup {
+  background-color: #f0f0f0;
+  border: 1px solid #aaaaaa;
+  border-radius: 10px;
+  box-sizing: border-box;
+  height: 50px;
+  width: 100px;
+  position: fixed;
+  z-index: 2;
+
+  &.is-constrained {
+    border-color: #ff3366;
+    border-width: 3px;
+  }
 }

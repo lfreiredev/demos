@@ -1,5 +1,7 @@
-<div class="container">
-  <div draggable="true" class="box">A</div>
-  <div draggable="true" class="box">B</div>
-  <div draggable="true" class="box">C</div>
+<div #containerRef class="container">
+  <div *ngIf="popupPosition" #popupRef class="popup" [class.is-constrained]="isConstrained" [style.left.px]="popupPosition.left"
+    [style.top.px]="popupPosition.top" (mousedown)="handleMousedown($event)">
+  </div>
 </div>
+
+<button type="button" (click)="addPopup()">Add</button>
