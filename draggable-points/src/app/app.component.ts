@@ -11,8 +11,8 @@ interface Size {
 }
 
 const minDistance = 10;
-const popupWidth = 100;
-const popupHeight = 50;
+const popupWidth = 1;
+const popupHeight = 1;
 
 @Component({
   selector: 'app-root',
