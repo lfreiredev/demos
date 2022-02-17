@@ -8,6 +8,7 @@ import { Popup } from 'src/app/models/popup';
 })
 export class PopupComponent implements OnInit {
   @Input() popup: Popup;
+  @Input() disabled: boolean = false;
 
   @Output() mousedownEvent: EventEmitter<any> = new EventEmitter();
   @Output() deleteEvent: EventEmitter<number> = new EventEmitter();

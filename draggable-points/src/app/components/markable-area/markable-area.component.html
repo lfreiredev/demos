@@ -3,8 +3,8 @@
   <ng-container *ngFor="let item of popups">
     <app-popup #popups [popup]="item" (mousedownEvent)="handleMousedown($event)" 
       (deleteEvent)="handleDelete($event)" (editEvent)="handleEdit($event)" 
-      (click)="onClickPopup($event)"></app-popup>
+      (click)="onClickPopup($event)" [disabled]="disabled"></app-popup>
   </ng-container>
 </div>
 
-<button type="button" (click)="addPopup()">Add</button>
+<button type="button" (click)="addPopup(true)" [disabled]="disabled">Add</button>

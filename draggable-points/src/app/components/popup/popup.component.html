@@ -3,7 +3,7 @@
   (mousedown)="handleMousedown($event)">
   <div [id]="popup.id" [class.is-selected]="popup.isSelected">
     Hello World
-    <span class="delete-button" (click)="handleDelete()">x</span>
-    <span class="edit-button" (click)="handleEdit()">e</span>
+    <span class="delete-button" (click)="handleDelete()" [hidden]="disabled">x</span>
+    <span class="edit-button" (click)="handleEdit()" [hidden]="disabled">e</span>
   </div>
 </div>

@@ -1,2 +1,7 @@
-<app-markable-area background="https://images.unsplash.com/photo-1640597995884-57667d173ccf?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=880&q=80">
-</app-markable-area>
+<form [formGroup]="form">
+  <app-markable-area formControlName="markers" [background]="bg">
+  </app-markable-area>
+</form>
+<button (click)="enable()">Enable</button>
+<button (click)="disable()">Disable</button>
+<button (click)="save()">Save</button>

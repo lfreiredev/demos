@@ -1,5 +1,5 @@
-import { AfterViewInit, Component, ElementRef, Input, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { AfterViewInit, Component, ElementRef, forwardRef, Input, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { ControlValueAccessor, FormGroup, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Popup } from 'src/app/models/popup';
 import { Position } from 'src/app/models/position';
 import { Size } from 'src/app/models/size';
@@ -14,9 +14,16 @@ interface SelectedPopup {
 @Component({
   selector: 'app-markable-area',
   styleUrls: ['./markable-area.component.scss'],
-  templateUrl: './markable-area.component.html'
+  templateUrl: './markable-area.component.html',
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => MarkableAreaComponent),
+      multi: true,
+    },
+  ]
 })
-export class MarkableAreaComponent implements AfterViewInit {
+export class MarkableAreaComponent implements AfterViewInit, ControlValueAccessor {
   @Input() background: string;
 
   @ViewChild('containerRef') public containerRef: ElementRef;
@@ -27,10 +34,36 @@ export class MarkableAreaComponent implements AfterViewInit {
   public popupsSize: Size;
   public initialPopupPosition: Position;
   public popups: Popup[] = [];
+  public disabled: boolean = false;
 
   private selectedPopup: SelectedPopup = {} as SelectedPopup;
+  private touched: boolean = false;
 
   constructor() {}
+
+  private onChange = (popups: Popup[]) => {};
+  private onTouched = () => {};
+
+  public writeValue(data: Popup[]): void {
+    data.forEach((p) => this.addPopup(false, p));
+    this.popups.forEach(popup => popup.isSelected = false);
+  }
+  public registerOnChange(fn: any): void {
+    this.onChange = fn;
+  }
+  public registerOnTouched(fn: any): void {
+    this.onTouched = fn;
+  }
+  public setDisabledState?(isDisabled: boolean): void {
+    this.disabled = isDisabled;
+  }
+
+  private markAsTouched() {
+    if (!this.touched) {
+      this.onTouched();
+      this.touched = true;
+    }
+  }
 
   public ngAfterViewInit(): void {
     // fetch the containers dimensions
@@ -51,7 +84,6 @@ export class MarkableAreaComponent implements AfterViewInit {
   }
 
   public onClickContainer(): void {
-    console.log('onClickContainer');
     this.selectedPopup = {} as SelectedPopup;
     this.popups.forEach(popup => popup.isSelected = false);
   }
@@ -60,7 +92,12 @@ export class MarkableAreaComponent implements AfterViewInit {
     event.stopPropagation();
   }
 
-  public addPopup(): void {
+  public addPopup(fromButton: boolean = false, popup?: Popup): void {
+    // TODO: this won't receive a popup, just the coordinates and id
+    if (popup) {
+      this.popups.push(popup);
+      return;
+    }
     this.popups.push({
       id: this.popups.length === 0 ? 0 : this.popups[this.popups.length - 1].id + 1,
       anchorMouseOffset: {
@@ -78,19 +115,21 @@ export class MarkableAreaComponent implements AfterViewInit {
       isConstrained: false,
       isSelected: false,
     });
-  }
 
-  public deletePopup(): void {
-    if (this.selectedPopup && this.selectedPopup.popup) {
-      this.delete(this.selectedPopup.popup.id);
+    if (fromButton) {
+      this.markAsTouched();
     }
+    this.onChange(this.popups);
   }
 
   public handleDelete(event: number): void {
+    this.markAsTouched();
     this.delete(event);
+    this.onChange(this.popups);
   }
 
   public handleEdit(data: { id: number, el: ElementRef }): void {
+    this.markAsTouched();
     const popup: Popup = this.popups.find(popup => popup.id === data.id);
     this.popups.forEach(popup => popup.isSelected = false);
     popup.isSelected = true;
@@ -109,7 +148,6 @@ export class MarkableAreaComponent implements AfterViewInit {
 
   public handleMousedown(data: { event: MouseEvent, id: number, el: ElementRef }): void {
     if (!this.selectedPopup.popup || this.selectedPopup.popup.id !== data.id) {
-      console.log('can\'t move');
       return;
     }
 
