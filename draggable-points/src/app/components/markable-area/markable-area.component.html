@@ -1,0 +1,10 @@
+<div #containerRef class="container" (click)="onClickContainer()">
+  <img class="bg" [src]="background" alt="" (dragstart)="$event.preventDefault();">
+  <ng-container *ngFor="let item of popups">
+    <app-popup #popups [popup]="item" (mousedownEvent)="handleMousedown($event)" 
+      (deleteEvent)="handleDelete($event)" (editEvent)="handleEdit($event)" 
+      (click)="onClickPopup($event)"></app-popup>
+  </ng-container>
+</div>
+
+<button type="button" (click)="addPopup()">Add</button>

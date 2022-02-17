@@ -1,0 +1,54 @@
+.popup {
+  box-sizing: border-box;
+  height: 1px;
+  width: 1px;
+  position: fixed;
+  z-index: 2;
+
+  > div {
+    position: absolute;
+    bottom: 10px;
+    left: -36px;
+    width: 72px;
+    height: 87px;
+    background: red;
+
+    &::after {
+      content: " ";
+      position: absolute;
+      top: 87px;
+      left: 32px;
+      margin-left: -5px;
+      border-width: 10px;
+      border-style: solid;
+      border-color: red transparent transparent transparent;
+    }
+
+    &.is-selected {
+      background: green;
+
+      &::after {
+        border-color: green transparent transparent transparent;
+      }
+    }
+
+    > span {
+      position: absolute;
+      top: 0;
+      background-color: #ffffff78;
+      padding: 0 3px;
+
+      &.delete-button {
+        right: 0;
+      }
+
+      &.edit-button {
+        right: 15px;
+      }
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+}

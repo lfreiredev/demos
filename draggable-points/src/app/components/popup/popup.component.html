@@ -1,0 +1,9 @@
+<div [id]="popup.id" class="popup" [class.is-constrained]="popup.isConstrained"
+  [style.left.px]="popup.popupPosition.left" [style.top.px]="popup.popupPosition.top"
+  (mousedown)="handleMousedown($event)">
+  <div [id]="popup.id" [class.is-selected]="popup.isSelected">
+    Hello World
+    <span class="delete-button" (click)="handleDelete()">x</span>
+    <span class="edit-button" (click)="handleEdit()">e</span>
+  </div>
+</div>

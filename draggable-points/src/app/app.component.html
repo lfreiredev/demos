@@ -1,11 +1,2 @@
-<div #containerRef class="container">
-  <ng-container>
-    <div *ngFor="let item of popups" [id]="item.id" #popups class="popup" [class.is-constrained]="isConstrained"
-      [style.left.px]="item.popupPosition.left" [style.top.px]="item.popupPosition.top"
-      (mousedown)="handleMousedown($event)">
-      <span [id]="item.id">Hello World</span>
-    </div>
-  </ng-container>
-</div>
-
-<button type="button" (click)="addPopup()">Add</button>
+<app-markable-area background="https://images.unsplash.com/photo-1640597995884-57667d173ccf?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=880&q=80">
+</app-markable-area>
