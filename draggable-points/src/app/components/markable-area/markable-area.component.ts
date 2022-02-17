@@ -34,17 +34,20 @@ export class MarkableAreaComponent implements AfterViewInit, ControlValueAccesso
   public popupsSize: Size;
   public initialPopupPosition: Position;
   public popups: Popup[] = [];
-  public disabled: boolean = false;
-
   private selectedPopup: SelectedPopup = {} as SelectedPopup;
+  
+  public disabled: boolean = false;
   private touched: boolean = false;
+  private onChange = (popups: Popup[]) => { };
+  private onTouched = () => { };
 
-  constructor() {}
-
-  private onChange = (popups: Popup[]) => {};
-  private onTouched = () => {};
-
+  /**
+   * Control Value Accessor methods
+   */
   public writeValue(data: Popup[]): void {
+    // If there are any popups sent from the parent
+    // add them individually to the container
+    // and deselect all
     data.forEach((p) => this.addPopup(false, p));
     this.popups.forEach(popup => popup.isSelected = false);
   }
@@ -59,14 +62,20 @@ export class MarkableAreaComponent implements AfterViewInit, ControlValueAccesso
   }
 
   private markAsTouched() {
+    // Marke the form control as touched
+    // if it hasn't been previously marked
     if (!this.touched) {
       this.onTouched();
       this.touched = true;
     }
   }
 
+  /**
+   * Lifecycle methods
+   */
   public ngAfterViewInit(): void {
-    // fetch the containers dimensions
+    // Fetch the containers dimensions
+    // Calculate the container a initial popup positions
     this.containerSize = {
       width: (this.containerRef.nativeElement as HTMLElement).clientWidth,
       height: (this.containerRef.nativeElement as HTMLElement).clientHeight,
@@ -83,17 +92,27 @@ export class MarkableAreaComponent implements AfterViewInit, ControlValueAccesso
     };
   }
 
+  /**
+   * Interaction methods
+   */
   public onClickContainer(): void {
+    // If the container is clicked anywhere outside
+    // of a popup, unmark the selected popup
+    // and deselect them all
     this.selectedPopup = {} as SelectedPopup;
     this.popups.forEach(popup => popup.isSelected = false);
   }
 
   public onClickPopup(event: PointerEvent): void {
+    // If a popup is clicked, stop the click event
+    // propagation to the container
     event.stopPropagation();
   }
 
   public addPopup(fromButton: boolean = false, popup?: Popup): void {
     // TODO: this won't receive a popup, just the coordinates and id
+    // If there's data for the popup, add it
+    // else just add the default values
     if (popup) {
       this.popups.push(popup);
       return;
@@ -116,19 +135,25 @@ export class MarkableAreaComponent implements AfterViewInit, ControlValueAccesso
       isSelected: false,
     });
 
+    // If the add button was clicked, mark the form as touched
     if (fromButton) {
       this.markAsTouched();
     }
+
+    // Mark the change to notify the parent
     this.onChange(this.popups);
   }
 
   public handleDelete(event: number): void {
+    // Delete the popup and notify the parent
     this.markAsTouched();
     this.delete(event);
     this.onChange(this.popups);
   }
 
   public handleEdit(data: { id: number, el: ElementRef }): void {
+    // Deselect all popups, mark the selected one
+    // and assign it as the selected popup 
     this.markAsTouched();
     const popup: Popup = this.popups.find(popup => popup.id === data.id);
     this.popups.forEach(popup => popup.isSelected = false);
@@ -140,12 +165,17 @@ export class MarkableAreaComponent implements AfterViewInit, ControlValueAccesso
   }
 
   private delete(id: number): void {
+    // Find the index of the popup with the said id
+    // and remove it from the array
     let removeIndex = this.popups.map(item => item.id).indexOf(id);
     if (removeIndex >= 0) {
       this.popups.splice(removeIndex, 1);
     }
   }
 
+  /**
+   * Mouse event methods
+   */
   public handleMousedown(data: { event: MouseEvent, id: number, el: ElementRef }): void {
     if (!this.selectedPopup.popup || this.selectedPopup.popup.id !== data.id) {
       return;
