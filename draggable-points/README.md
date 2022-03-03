@@ -1,4 +1,4 @@
-# DraggablePoints
+# NG DraggablePoints
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.0.7.
 
@@ -6,22 +6,20 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-## Code scaffolding
+## Goals
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Navigate to `http://localhost:4200/` and you'll see an image and four buttons.
+By clicking the `Add` button, a new marker will be added within the boundaries of the image.
+Each marker is red until edited, meaning they can't be dragged around until their edit button has been pressed.
+After being pressed, the marker will turn green and you can drag it around.
+Each marker also has a cross icon, that deletes it.
 
-## Build
+The `Enable/Disable` buttons, enable and disable the form that's controlling the markers. By disabling it, no operations can be done,
+be it adding new markers, editing or deleting existing ones.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+Lastly, there's the `Save` button, that saves the current drawn markers coordinates to the local storage.
+Then, on page refresh, the markers coordinates are restored and immediatly redrawn to the image.
 
-## Running unit tests
+![image](https://user-images.githubusercontent.com/54550772/156543325-9408ada2-1768-4094-9bca-2cc13ad5e264.png)
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+Note: the image is just a container with a background. It can be anything else with boundaries.
